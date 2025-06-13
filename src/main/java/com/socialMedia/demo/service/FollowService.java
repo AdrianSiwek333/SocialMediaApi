@@ -1,8 +1,7 @@
-/*
 package com.socialMedia.demo.service;
 
-import com.example.twitterLike.model.Follow;
-import com.example.twitterLike.repository.FollowRepository;
+import com.socialMedia.demo.model.Follow;
+import com.socialMedia.demo.repository.FollowRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,4 +21,3 @@ public class FollowService {
         followRepository.delete(follow);
     }
 }
-*/

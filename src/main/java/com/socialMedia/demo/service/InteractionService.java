@@ -1,8 +1,7 @@
-/*
 package com.socialMedia.demo.service;
 
-import com.example.twitterLike.model.Interaction;
-import com.example.twitterLike.repository.InteractionRepository;
+import com.socialMedia.demo.model.Interaction;
+import com.socialMedia.demo.repository.InteractionRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,4 +21,3 @@ public class InteractionService {
         interactionRepository.delete(interaction);
     }
 }
-*/

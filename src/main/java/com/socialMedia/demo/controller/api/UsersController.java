@@ -1,9 +1,8 @@
-/*
 package com.socialMedia.demo.controller.api;
 
-import com.example.twitterLike.dto.UserDto;
-import com.example.twitterLike.model.Users;
-import com.example.twitterLike.service.UsersService;
+import com.socialMedia.demo.dto.UserDto;
+import com.socialMedia.demo.model.Users;
+import com.socialMedia.demo.service.UsersService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public class UsersController {
 
     @GetMapping("/all")
     public List<UserDto> getAllUsers(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size) {
+                                     @RequestParam(defaultValue = "10") int size) {
         return usersService.findAllUsersPaginated(page, size);
     }
 
@@ -42,4 +41,3 @@ public class UsersController {
         return usersService.isAuthenticatedUserOwner(user);
     }
 }
-*/

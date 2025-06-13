@@ -1,9 +1,8 @@
-/*
 package com.socialMedia.demo.service;
 
-import com.example.twitterLike.model.ERole;
-import com.example.twitterLike.model.Role;
-import com.example.twitterLike.repository.RoleRepository;
+import com.socialMedia.demo.model.ERole;
+import com.socialMedia.demo.model.Role;
+import com.socialMedia.demo.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,4 +19,3 @@ public class RoleService {
                 .orElseThrow(() -> new IllegalArgumentException("Role not found"));
     }
 }
-*/

@@ -1,12 +1,11 @@
-/*
 package com.socialMedia.demo.controller.api;
 
-import com.example.twitterLike.dto.CommentDto;
-import com.example.twitterLike.mapper.CommentMapper;
-import com.example.twitterLike.model.Comment;
-import com.example.twitterLike.service.CommentService;
-import com.example.twitterLike.service.PostService;
-import com.example.twitterLike.service.UsersService;
+import com.socialMedia.demo.dto.CommentDto;
+import com.socialMedia.demo.mapper.CommentMapper;
+import com.socialMedia.demo.model.Comment;
+import com.socialMedia.demo.service.CommentService;
+import com.socialMedia.demo.service.PostService;
+import com.socialMedia.demo.service.UsersService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,4 +47,3 @@ public class CommentController {
 
 
 }
-*/

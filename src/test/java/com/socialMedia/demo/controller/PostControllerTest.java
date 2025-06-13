@@ -3,12 +3,14 @@ package com.socialMedia.demo.controller;
 import com.socialMedia.demo.controller.api.PostController;
 import com.socialMedia.demo.dto.PostDto;
 import com.socialMedia.demo.model.Post;
+import com.socialMedia.demo.service.JwtService;
 import com.socialMedia.demo.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(PostController.class)
 @WithMockUser(username = "user", roles = {"USER"})
+@AutoConfigureMockMvc(addFilters = false)
 public class PostControllerTest {
 
     @Autowired
@@ -30,6 +33,9 @@ public class PostControllerTest {
 
     @MockitoBean
     PostService postService;
+
+    @MockitoBean
+    private JwtService jwtService;
 
     private Post post1;
     private PostDto postDto;

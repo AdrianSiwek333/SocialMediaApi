@@ -1,4 +1,3 @@
-/*
 package com.socialMedia.demo.service;
 
 import com.socialMedia.demo.model.Bookmark;
@@ -22,4 +21,3 @@ public class BookmarkService {
         bookmarkRepository.deleteById(bookmarkId);
     }
 }
-*/

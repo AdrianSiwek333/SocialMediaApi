@@ -1,4 +1,3 @@
-/*
 package com.socialMedia.demo.service;
 
 import com.socialMedia.demo.dto.CommentDto;
@@ -54,4 +53,3 @@ public class CommentService {
                 PageRequest.of(page, size)).getContent());
     }
 }
-*/

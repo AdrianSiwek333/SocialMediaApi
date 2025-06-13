@@ -1,11 +1,10 @@
-/*
 package com.socialMedia.demo.service;
 
-import com.example.twitterLike.dto.UserDto;
-import com.example.twitterLike.model.Users;
-import com.example.twitterLike.repository.CommentRepository;
-import com.example.twitterLike.repository.PostRepository;
-import com.example.twitterLike.repository.UsersRepository;
+import com.socialMedia.demo.dto.UserDto;
+import com.socialMedia.demo.model.Users;
+import com.socialMedia.demo.repository.CommentRepository;
+import com.socialMedia.demo.repository.PostRepository;
+import com.socialMedia.demo.repository.UsersRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -102,4 +101,3 @@ public class UsersService {
         return authenticatedUsername != null && authenticatedUsername.equals(user.getUsername());
     }
 }
-*/

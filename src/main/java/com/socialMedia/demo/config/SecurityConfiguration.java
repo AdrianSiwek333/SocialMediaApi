@@ -25,9 +25,10 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        String[] paths = {
+        String[] PUBLIC_PATHS = {
                 "api/authentication/register",
                 "api/authentication/authenticate",
+                "api/test/all",
                 "/api/v1/auth-service/**",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
@@ -36,7 +37,7 @@ public class SecurityConfiguration {
         };
 
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.requestMatchers(paths)
+                .authorizeHttpRequests(request -> request.requestMatchers(PUBLIC_PATHS)
                         .permitAll()
 /*                        .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/api/v1/user/**").hasAnyAuthority(Role.USER.name(), Role.ADMIN.name())*/
