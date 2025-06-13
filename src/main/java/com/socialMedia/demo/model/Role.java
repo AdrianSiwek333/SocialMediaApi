@@ -1,9 +1,13 @@
 package com.socialMedia.demo.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "roles")
+@Data
+@NoArgsConstructor
 public class Role {
 
     @Id
@@ -14,9 +18,6 @@ public class Role {
     @Column(length = 20)
     private ERole name;
 
-    public Role() {
-    }
-
     public Role(ERole name) {
         this.name = name;
     }
@@ -25,22 +26,5 @@ public class Role {
         this.roleId = id;
         this.name = name;
     }
-
-    public Long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Long id) {
-        this.roleId = id;
-    }
-
-    public ERole getName() {
-        return name;
-    }
-
-    public void setName(ERole name) {
-        this.name = name;
-    }
-
 
 }

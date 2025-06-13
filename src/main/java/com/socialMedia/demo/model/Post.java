@@ -3,6 +3,7 @@ package com.socialMedia.demo.model;
 import com.socialMedia.demo.dto.CommentDto;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,9 +12,8 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "post")
-@Builder
-@Getter
-@Setter
+@SuperBuilder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Post {
@@ -22,7 +22,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
 
-    @Column(length = 255, nullable = false)
+    @Column(nullable = false)
     private String content;
 
     @OneToMany(mappedBy = "parentPost", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},

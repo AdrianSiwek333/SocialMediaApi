@@ -1,6 +1,7 @@
 package com.socialMedia.demo.service;
 
 import com.socialMedia.demo.dto.UserDto;
+import com.socialMedia.demo.mapper.UserMapper;
 import com.socialMedia.demo.model.Users;
 import com.socialMedia.demo.repository.CommentRepository;
 import com.socialMedia.demo.repository.PostRepository;
@@ -21,20 +22,18 @@ public class UsersService {
     private final UsersRepository usersRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final UserMapper userMapper;
 
-    public UsersService(UsersRepository usersRepository, PostRepository postRepository, CommentRepository commentRepository) {
+    public UsersService(UsersRepository usersRepository, PostRepository postRepository, CommentRepository commentRepository, UserMapper userMapper) {
         this.usersRepository = usersRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.userMapper = userMapper;
     }
 
     public UserDto findUserById(Long userId) {
-        return usersRepository.findById(userId)
-                .map(user -> new UserDto(
-                        user.getId(),
-                        user.getUsername()
-                ))
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return userMapper.mapToUserDto(usersRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
     public Users findUserEntityByUsername(String username) {
@@ -48,25 +47,13 @@ public class UsersService {
     }
 
     public List<UserDto> findAllUsers() {
-        return usersRepository.findAll()
-                .stream()
-                .map(user -> new UserDto(
-                        user.getId(),
-                        user.getUsername()
-                ))
-                .toList();
+        return userMapper.mapToUserDtoList(usersRepository.findAll());
     }
 
     public List<UserDto> findAllUsersPaginated(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Users> usersPage = usersRepository.findAll(pageable);
-        return usersPage.getContent()
-                .stream()
-                .map(user -> new UserDto(
-                        user.getId(),
-                        user.getUsername()
-                ))
-                .toList();
+        return userMapper.mapToUserDtoList(usersPage.getContent());
     }
 
     public void saveUser(Users user) {
@@ -99,5 +86,14 @@ public class UsersService {
     public boolean isAuthenticatedUserOwner(Users user) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return authenticatedUsername != null && authenticatedUsername.equals(user.getUsername());
+    }
+
+    public String getAuthenticatedUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    public List<UserDto> findUsersListByUsername(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userMapper.mapToUserDtoList(usersRepository.findByUsernameCustom(username, pageable).getContent());
     }
 }

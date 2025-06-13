@@ -1,13 +1,11 @@
-package com.socialMedia.demo.controller;
+package com.socialMedia.demo.controller.api;
 
-import com.socialMedia.demo.controller.api.PostController;
 import com.socialMedia.demo.dto.PostDto;
 import com.socialMedia.demo.model.Post;
 import com.socialMedia.demo.service.JwtService;
 import com.socialMedia.demo.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
