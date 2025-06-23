@@ -4,6 +4,8 @@ import com.socialMedia.demo.dto.UserDto;
 import com.socialMedia.demo.mapper.UserMapper;
 import com.socialMedia.demo.model.Users;
 import com.socialMedia.demo.service.UsersService;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,26 +48,29 @@ public class UsersController {
         return usersService.findUsersListByUsername(username, page, size);
     }
 
-    @PutMapping
-    public UserDto updateUser(@RequestBody UserDto userDto) {
-        Users user = usersService.findUserEntityById(userDto.getId());
-        if(!isCurrentUserOwner(user)) {
+    @PutMapping("/edit")
+    public ResponseEntity<UserDto> updateUser(@RequestBody Users editedUser) {
+
+        if (editedUser == null || editedUser.getId() == null) {
+            throw new IllegalArgumentException("Edited user or user ID cannot be null");
+        }
+
+        Users user = usersService.findUserEntityById(editedUser.getId());
+        if (!usersService.isAuthenticatedUserOwner(user)) {
             throw new IllegalArgumentException("You are not authorized to update this user");
         }
-        usersService.saveUser(user);
-        return userMapper.mapToUserDto(user);
+        usersService.saveUser(editedUser);
+        UserDto userDto = userMapper.mapToUserDto(editedUser);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(userDto);
     }
 
     @DeleteMapping("/{userId}")
     public void deleteUser(@PathVariable Long userId) {
         Users user = usersService.findUserEntityById(userId);
-        if(!isCurrentUserOwner(user)) {
+        if(!usersService.isAuthenticatedUserOwner(user)) {
             throw new IllegalArgumentException("You are not authorized to delete this user");
         }
         usersService.deleteUser(userId);
     }
 
-    private boolean isCurrentUserOwner(Users user) {
-        return usersService.isAuthenticatedUserOwner(user);
-    }
 }

@@ -46,17 +46,13 @@ public class UsersService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
-    public List<UserDto> findAllUsers() {
-        return userMapper.mapToUserDtoList(usersRepository.findAll());
-    }
-
     public List<UserDto> findAllUsersPaginated(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Users> usersPage = usersRepository.findAll(pageable);
         return userMapper.mapToUserDtoList(usersPage.getContent());
     }
 
-    public void saveUser(Users user) {
+    public UserDto saveUser(Users user) {
         try {
             usersRepository.save(user);
         } catch (DataIntegrityViolationException e) {
@@ -68,6 +64,7 @@ public class UsersService {
                 throw e;
             }
         }
+        return userMapper.mapToUserDto(user);
     }
 
     public void deleteUser(Long userId) {
@@ -83,6 +80,11 @@ public class UsersService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
+    public List<UserDto> findUsersListByUsername(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userMapper.mapToUserDtoList(usersRepository.findByUsernameCustom(username, pageable).getContent());
+    }
+
     public boolean isAuthenticatedUserOwner(Users user) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return authenticatedUsername != null && authenticatedUsername.equals(user.getUsername());
@@ -90,10 +92,5 @@ public class UsersService {
 
     public String getAuthenticatedUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
-
-    public List<UserDto> findUsersListByUsername(String username, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return userMapper.mapToUserDtoList(usersRepository.findByUsernameCustom(username, pageable).getContent());
     }
 }

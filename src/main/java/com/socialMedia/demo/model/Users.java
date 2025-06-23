@@ -1,5 +1,6 @@
 package com.socialMedia.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class Users implements UserDetails {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = false, nullable = false)
     private String password;
 
     @Column
