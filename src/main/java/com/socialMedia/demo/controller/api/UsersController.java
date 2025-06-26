@@ -2,10 +2,13 @@ package com.socialMedia.demo.controller.api;
 
 import com.socialMedia.demo.dto.UserDto;
 import com.socialMedia.demo.mapper.UserMapper;
+import com.socialMedia.demo.model.Role;
 import com.socialMedia.demo.model.Users;
+import com.socialMedia.demo.service.RoleService;
 import com.socialMedia.demo.service.UsersService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +21,16 @@ public class UsersController {
 
     private final UserMapper userMapper;
 
-    public UsersController(UsersService usersService, UserMapper userMapper) {
+    private final RoleService roleService;
+
+    private PasswordEncoder passwordEncoder;
+
+    public UsersController(UsersService usersService, UserMapper userMapper, RoleService roleService,
+                           PasswordEncoder passwordEncoder) {
         this.usersService = usersService;
         this.userMapper = userMapper;
+        this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/all")
@@ -48,9 +58,8 @@ public class UsersController {
         return usersService.findUsersListByUsername(username, page, size);
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/update")
     public ResponseEntity<UserDto> updateUser(@RequestBody Users editedUser) {
-
         if (editedUser == null || editedUser.getId() == null) {
             throw new IllegalArgumentException("Edited user or user ID cannot be null");
         }
@@ -59,8 +68,19 @@ public class UsersController {
         if (!usersService.isAuthenticatedUserOwner(user)) {
             throw new IllegalArgumentException("You are not authorized to update this user");
         }
-        usersService.saveUser(editedUser);
-        UserDto userDto = userMapper.mapToUserDto(editedUser);
+
+        if (editedUser.getUsername() != null) {
+            user.setUsername(editedUser.getUsername());
+        }
+        if (editedUser.getEmail() != null) {
+            user.setEmail(editedUser.getEmail());
+        }
+        if (editedUser.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(editedUser.getPassword()));
+        }
+
+        usersService.saveUser(user);
+        UserDto userDto = userMapper.mapToUserDto(user);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(userDto);
     }
 

@@ -18,4 +18,9 @@ public class RoleService {
         return roleRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("Role not found"));
     }
+
+    public Role saveRole(Role role)
+    {
+        return roleRepository.save(role);
+    }
 }

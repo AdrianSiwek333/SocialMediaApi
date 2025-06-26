@@ -7,7 +7,9 @@ import com.socialMedia.demo.model.ERole;
 import com.socialMedia.demo.model.Role;
 import com.socialMedia.demo.model.Users;
 import com.socialMedia.demo.service.JwtService;
+import com.socialMedia.demo.service.RoleService;
 import com.socialMedia.demo.service.UsersService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -15,6 +17,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,10 +44,16 @@ public class UsersControllerTest {
     private UsersService usersService;
 
     @MockitoBean
+    private RoleService roleService;
+
+    @MockitoBean
     private JwtService jwtService;
 
     @MockitoBean
     private UserMapper userMapper;
+
+    @MockitoBean
+    private PasswordEncoder passwordEncoder;
 
     private Users user1;
 
@@ -141,29 +150,48 @@ public class UsersControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("[1].username").value("testUser2"));
     }
 
-/*    @Test
-    public void updateUserTest() throws Exception
-    {
+    @Test
+    public void updateUserTest() throws Exception {
         Users editedUser = Users.builder()
                 .id(1L)
                 .username("updatedUser")
                 .email("updatedEmail@gmail.com")
-                .password("pass")
+                .password("newPassword")
                 .role(role)
                 .build();
+
+        Users existingUser = Users.builder()
+                .id(1L)
+                .username("oldUser")
+                .email("oldEmail@gmail.com")
+                .password("oldPassword")
+                .role(role)
+                .build();
+
         UserDto updatedUserDto = new UserDto(1L, "updatedUser", "updatedEmail@gmail.com");
 
-        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(user1);
-        Mockito.when(usersService.isAuthenticatedUserOwner(user1)).thenReturn(true);
-        Mockito.when(userMapper.mapToUserDto(editedUser)).thenReturn(updatedUserDto);
+        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(existingUser);
+        Mockito.when(usersService.isAuthenticatedUserOwner(existingUser)).thenReturn(true);
+        Mockito.when(userMapper.mapToUserDto(existingUser)).thenReturn(updatedUserDto);
+        Mockito.when(passwordEncoder.encode("newPassword")).thenReturn("encodedPassword");
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/edit")
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/update")
                         .contentType("application/json")
                         .content(jacksonObjectMapper.writeValueAsString(editedUser)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("updatedUser"));
-    }*/
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("updatedUser"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("updatedEmail@gmail.com"));
+
+        Mockito.verify(usersService, Mockito.times(1)).findUserEntityById(1L);
+        Mockito.verify(usersService, Mockito.times(1)).isAuthenticatedUserOwner(existingUser);
+        Mockito.verify(usersService, Mockito.times(1)).saveUser(existingUser);
+        Mockito.verify(userMapper, Mockito.times(1)).mapToUserDto(existingUser);
+
+        Assertions.assertEquals("updatedUser", existingUser.getUsername());
+        Assertions.assertEquals("updatedEmail@gmail.com", existingUser.getEmail());
+        Assertions.assertEquals("encodedPassword", existingUser.getPassword());
+    }
 
     @Test
     public void deleteUserTest() throws Exception
