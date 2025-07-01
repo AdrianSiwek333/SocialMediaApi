@@ -1,6 +1,8 @@
 package com.socialMedia.demo.controller.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.socialMedia.demo.dto.ChangePasswordDto;
 import com.socialMedia.demo.dto.UserDto;
 import com.socialMedia.demo.mapper.UserMapper;
 import com.socialMedia.demo.model.ERole;
@@ -12,7 +14,6 @@ import com.socialMedia.demo.service.UsersService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,13 +25,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 import java.util.List;
+import java.util.Map;
 
 @WebMvcTest(UsersController.class)
 @WithMockUser(username = "user", roles = {"USER"})
@@ -156,24 +154,16 @@ public class UsersControllerTest {
                 .id(1L)
                 .username("updatedUser")
                 .email("updatedEmail@gmail.com")
-                .password("newPassword")
-                .role(role)
-                .build();
-
-        Users existingUser = Users.builder()
-                .id(1L)
-                .username("oldUser")
-                .email("oldEmail@gmail.com")
-                .password("oldPassword")
+                .password("newPassword123")
                 .role(role)
                 .build();
 
         UserDto updatedUserDto = new UserDto(1L, "updatedUser", "updatedEmail@gmail.com");
 
-        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(existingUser);
-        Mockito.when(usersService.isAuthenticatedUserOwner(existingUser)).thenReturn(true);
-        Mockito.when(userMapper.mapToUserDto(existingUser)).thenReturn(updatedUserDto);
-        Mockito.when(passwordEncoder.encode("newPassword")).thenReturn("encodedPassword");
+        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(user1);
+        Mockito.when(usersService.isAuthenticatedUserOwner(user1)).thenReturn(true);
+        Mockito.when(userMapper.mapToUserDto(user1)).thenReturn(updatedUserDto);
+        Mockito.when(passwordEncoder.encode("newPassword123")).thenReturn("encodedPassword123");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/users/update")
                         .contentType("application/json")
@@ -184,13 +174,130 @@ public class UsersControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("updatedEmail@gmail.com"));
 
         Mockito.verify(usersService, Mockito.times(1)).findUserEntityById(1L);
-        Mockito.verify(usersService, Mockito.times(1)).isAuthenticatedUserOwner(existingUser);
-        Mockito.verify(usersService, Mockito.times(1)).saveUser(existingUser);
-        Mockito.verify(userMapper, Mockito.times(1)).mapToUserDto(existingUser);
+        Mockito.verify(usersService, Mockito.times(1)).isAuthenticatedUserOwner(user1);
+        Mockito.verify(usersService, Mockito.times(1)).saveUser(user1);
+        Mockito.verify(userMapper, Mockito.times(1)).mapToUserDto(user1);
 
-        Assertions.assertEquals("updatedUser", existingUser.getUsername());
-        Assertions.assertEquals("updatedEmail@gmail.com", existingUser.getEmail());
-        Assertions.assertEquals("encodedPassword", existingUser.getPassword());
+        Assertions.assertEquals("updatedUser", user1.getUsername());
+        Assertions.assertEquals("updatedEmail@gmail.com", user1.getEmail());
+        Assertions.assertEquals("encodedPassword123", user1.getPassword());
+    }
+
+    @Test
+    public void changePasswordTest() throws Exception
+    {
+        ChangePasswordDto changePasswordDto = new ChangePasswordDto(1L, "old", "NewPassword123");
+
+        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(user1);
+        Mockito.when(usersService.isAuthenticatedUserOwner(user1)).thenReturn(true);
+        Mockito.when(passwordEncoder.matches(changePasswordDto.getOldPassword(), user1.getPassword())).thenReturn(true);
+
+        String responseBody = mockMvc.perform(MockMvcRequestBuilders.put("/api/users/changePassword")
+                .contentType("application/json")
+                .content(jacksonObjectMapper.writeValueAsString(changePasswordDto)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Map<String, String> responseMap = jacksonObjectMapper.readValue(responseBody, new TypeReference<Map<String, String>>() {});
+
+        Assertions.assertEquals("Password changed successfully", responseMap.get("message"));
+
+        Mockito.verify(usersService, Mockito.times(1)).findUserEntityById(1L);
+        Mockito.verify(usersService, Mockito.times(1)).isAuthenticatedUserOwner(user1);
+        Mockito.verify(usersService, Mockito.times(1)).saveUser(user1);
+    }
+
+    @Test
+    public void changePasswordUnauthorizedUserTest() throws Exception {
+        ChangePasswordDto changePasswordDto = new ChangePasswordDto(1L, "old", "NewPassword123");
+
+        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(user1);
+        Mockito.when(usersService.isAuthenticatedUserOwner(user1)).thenReturn(false);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/changePassword")
+                        .contentType("application/json")
+                        .content(jacksonObjectMapper.writeValueAsString(changePasswordDto)))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verify(usersService, Mockito.times(1)).findUserEntityById(1L);
+        Mockito.verify(usersService, Mockito.times(1)).isAuthenticatedUserOwner(user1);
+        Mockito.verify(usersService, Mockito.never()).saveUser(user1);
+    }
+
+    @Test
+    public void changePasswordIncorrectOldPasswordTest() throws Exception {
+        ChangePasswordDto changePasswordDto = new ChangePasswordDto(1L, "wrongOldPassword", "NewPassword123");
+
+        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(user1);
+        Mockito.when(usersService.isAuthenticatedUserOwner(user1)).thenReturn(true);
+        Mockito.when(passwordEncoder.matches("wrongOldPassword", user1.getPassword())).thenReturn(false);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/changePassword")
+                        .contentType("application/json")
+                        .content(jacksonObjectMapper.writeValueAsString(changePasswordDto)))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verify(usersService, Mockito.times(1)).findUserEntityById(1L);
+        Mockito.verify(usersService, Mockito.times(1)).isAuthenticatedUserOwner(user1);
+        Mockito.verify(usersService, Mockito.never()).saveUser(user1);
+    }
+
+    @Test
+    public void changePasswordEmptyNewPasswordTest() throws Exception {
+        ChangePasswordDto changePasswordDto = new ChangePasswordDto(1L, "oldPassword", "");
+
+        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(user1);
+        Mockito.when(usersService.isAuthenticatedUserOwner(user1)).thenReturn(true);
+        Mockito.when(passwordEncoder.matches("oldPassword", user1.getPassword())).thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/changePassword")
+                        .contentType("application/json")
+                        .content(jacksonObjectMapper.writeValueAsString(changePasswordDto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void changeUsernameTest() throws Exception
+    {
+        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(user1);
+        Mockito.when(usersService.isAuthenticatedUserOwner(user1)).thenReturn(true);
+
+        String responseBody = mockMvc.perform(MockMvcRequestBuilders.put("/api/users/changeUsername")
+                        .param("userId", "1")
+                        .param("newUsername", "freshUsername")
+                        .contentType("application/json")
+                )
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Map<String, String> responseMap = jacksonObjectMapper.readValue(responseBody, new TypeReference<Map<String, String>>() {});
+        Assertions.assertEquals("Username changed successfully", responseMap.get("message"));
+
+        Mockito.verify(usersService, Mockito.times(1)).findUserEntityById(1L);
+        Mockito.verify(usersService, Mockito.times(1)).isAuthenticatedUserOwner(user1);
+        Mockito.verify(usersService, Mockito.times(1)).saveUser(user1);
+    }
+
+    @Test
+    public void changeUsernameUnauthorizedUserTest() throws Exception
+    {
+        Mockito.when(usersService.findUserEntityById(1L)).thenReturn(user1);
+        Mockito.when(usersService.isAuthenticatedUserOwner(user1)).thenReturn(false);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/changeUsername")
+                        .param("userId", "1")
+                        .param("newUsername", "freshUsername")
+                        .contentType("application/json")
+                )
+                .andExpect(status().isBadRequest());
+
+        Mockito.verify(usersService, Mockito.times(1)).findUserEntityById(1L);
+        Mockito.verify(usersService, Mockito.times(1)).isAuthenticatedUserOwner(user1);
+        Mockito.verify(usersService, Mockito.never()).saveUser(user1);
     }
 
     @Test

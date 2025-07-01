@@ -1,8 +1,8 @@
 package com.socialMedia.demo.controller.api;
 
+import com.socialMedia.demo.dto.ChangePasswordDto;
 import com.socialMedia.demo.dto.UserDto;
 import com.socialMedia.demo.mapper.UserMapper;
-import com.socialMedia.demo.model.Role;
 import com.socialMedia.demo.model.Users;
 import com.socialMedia.demo.service.RoleService;
 import com.socialMedia.demo.service.UsersService;
@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -64,6 +65,12 @@ public class UsersController {
             throw new IllegalArgumentException("Edited user or user ID cannot be null");
         }
 
+        String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+        if(editedUser.getPassword() != null && !editedUser.getPassword().matches(passwordRegex))
+        {
+            throw new IllegalArgumentException("New password must be at least 8 characters long and contain at least one letter and one number");
+        }
+
         Users user = usersService.findUserEntityById(editedUser.getId());
         if (!usersService.isAuthenticatedUserOwner(user)) {
             throw new IllegalArgumentException("You are not authorized to update this user");
@@ -82,6 +89,52 @@ public class UsersController {
         usersService.saveUser(user);
         UserDto userDto = userMapper.mapToUserDto(user);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(userDto);
+    }
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<Map<String, String>> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
+
+        String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+        if (changePasswordDto.getNewPassword() == null || !changePasswordDto.getNewPassword().matches(passwordRegex)) {
+            throw new IllegalArgumentException("New password must be at least 8 characters long and contain at least one letter and one number");
+        }
+
+        Users user = usersService.findUserEntityById(changePasswordDto.getUserId());
+
+        if(!usersService.isAuthenticatedUserOwner(user)) {
+            throw new IllegalArgumentException("You are not authorized to change password");
+        }
+        if(!passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword()))
+        {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+        usersService.saveUser(user);
+
+        Map<String, String> response = Map.of("message", "Password changed successfully");
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
+    }
+
+    @PutMapping("/changeUsername")
+    public ResponseEntity<Map<String, String>> changeUsername(@RequestParam Long userId, @RequestParam String newUsername)
+    {
+        if (newUsername == null) {
+            throw new IllegalArgumentException("Username cannot be null");
+        }
+
+        Users user = usersService.findUserEntityById(userId);
+
+        if(!usersService.isAuthenticatedUserOwner(user))
+        {
+            throw new IllegalArgumentException("You are not authorized to change username");
+        }
+
+        user.setUsername(newUsername);
+        usersService.saveUser(user);
+
+        Map<String, String> response = Map.of("message", "Username changed successfully");
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
     }
 
     @DeleteMapping("/{userId}")
