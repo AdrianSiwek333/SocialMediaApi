@@ -10,7 +10,6 @@ import com.socialMedia.demo.repository.RoleRepository;
 import com.socialMedia.demo.repository.UsersRepository;
 import com.socialMedia.demo.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/authentication")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
@@ -28,15 +28,18 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
-        if(usersRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+        System.out.println(registerRequest);
+        if(usersRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
         }
         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Error: Role not found"));
 
         Users newUser = new Users();
-        newUser.setUsername(registerRequest.getUsername());
         newUser.setEmail(registerRequest.getEmail());
+        newUser.setFirstName(registerRequest.getFirstName());
+        newUser.setLastName(registerRequest.getLastName());
+        newUser.setSex(registerRequest.getSex());
         newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         newUser.setRole(userRole);
 

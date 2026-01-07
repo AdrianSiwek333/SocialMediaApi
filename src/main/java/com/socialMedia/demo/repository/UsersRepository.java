@@ -12,14 +12,10 @@ import java.util.Optional;
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Long> {
 
-    Optional<Users> findByUsername(String username);
-
     Optional<Users> findByEmail(String email);
-
-    Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
 
-    @Query("SELECT u FROM Users u WHERE u.username like %:username%")
-    Page<Users> findByUsernameCustom(@Param("username") String username, Pageable pageable);
+//    @Query("SELECT u FROM Users u WHERE u.username like %:username%")
+//    Page<Users> findByUsernameCustom(@Param("username") String username, Pageable pageable);
 }

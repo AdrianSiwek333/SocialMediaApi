@@ -36,8 +36,8 @@ public class UsersService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
-    public Users findUserEntityByUsername(String username) {
-        return usersRepository.findByUsername(username)
+    public Users findUserEntityByEmail(String email) {
+        return usersRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
@@ -80,10 +80,10 @@ public class UsersService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    public List<UserDto> findUsersListByUsername(String username, int page, int size) {
+    /*public List<UserDto> findUsersListByUsername(String username, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userMapper.mapToUserDtoList(usersRepository.findByUsernameCustom(username, pageable).getContent());
-    }
+    }*/
 
     public boolean isAuthenticatedUserOwner(Users user) {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();

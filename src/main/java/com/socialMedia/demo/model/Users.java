@@ -3,9 +3,7 @@ package com.socialMedia.demo.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,20 +14,22 @@ import java.util.List;
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
-        @UniqueConstraint(columnNames = "username"),
         @UniqueConstraint(columnNames = "email")
         })
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Users implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    private String firstName;
+    private String lastName;
+    private String sex;
 
     @Column(unique = false, nullable = false)
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
@@ -43,22 +43,9 @@ public class Users implements UserDetails {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    public Users() {
-    }
-
-    public Users(Long id, String username, String password, String email) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-
-    public Users(Long id, String username, String password, String email, Role role) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.role = role;
+    @Override
+    public String getUsername() {
+        return getEmail();
     }
 
     @Override

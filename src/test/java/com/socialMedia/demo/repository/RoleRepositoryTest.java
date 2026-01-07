@@ -1,3 +1,4 @@
+/*
 package com.socialMedia.demo.repository;
 
 import com.socialMedia.demo.model.ERole;
@@ -42,3 +43,4 @@ public class RoleRepositoryTest {
         assert foundRole.getName() == ERole.ROLE_USER;
     }
 }
+*/

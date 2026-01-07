@@ -1,4 +1,4 @@
-/*
+
 package com.socialMedia.demo.config;
 
 import com.socialMedia.demo.model.ERole;
@@ -25,4 +25,4 @@ public class RoleInitializer implements CommandLineRunner {
         }
     }
 }
-*/
+

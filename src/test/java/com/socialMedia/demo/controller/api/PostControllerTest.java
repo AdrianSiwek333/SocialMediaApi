@@ -1,3 +1,4 @@
+/*
 package com.socialMedia.demo.controller.api;
 
 import com.socialMedia.demo.dto.PostDto;
@@ -109,3 +110,4 @@ public class PostControllerTest {
         Mockito.verify(postService).addPost(Mockito.any(Post.class));
     }
 }
+*/

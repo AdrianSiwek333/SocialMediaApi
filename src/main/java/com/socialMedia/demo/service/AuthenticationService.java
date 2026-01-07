@@ -30,8 +30,10 @@ public class AuthenticationService {
                 .orElseThrow(() -> new IllegalArgumentException("Role not found"));
 
         var user = Users.builder()
-                .username(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
+                .firstName(registerRequest.getFirstName())
+                .lastName(registerRequest.getLastName())
+                .sex(registerRequest.getSex())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(role)
                 .build();
@@ -46,9 +48,9 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
         );
-        var user = userRepository.findByUsername(authenticationRequest.getUsername()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+        var user = userRepository.findByEmail(authenticationRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefresh(new HashMap<>(), user);
         return AuthenticationResponse.builder()
