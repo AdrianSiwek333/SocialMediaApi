@@ -29,9 +29,11 @@ public class PostService {
     public PostDto addPost(AddPostRequest addPostRequest) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Users user = usersService.findUserEntityByEmail(username);
+
         Post post = new Post();
         post.setAuthor(user);
         post.setContent(addPostRequest.getContent());
+        post.setImageUrl(addPostRequest.getImageUrl());
 
         postRepository.save(post);
         return postMapper.mapToPostDto(post);

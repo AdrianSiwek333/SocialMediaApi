@@ -37,6 +37,7 @@ public class PostMapper {
         return new PostDto(
                 post.getPostId(),
                 post.getContent(),
+                post.getImageUrl(),
                 post.getAuthor().getFirstName(),
                 post.getAuthor().getLastName(),
                 post.getCreatedAt(),

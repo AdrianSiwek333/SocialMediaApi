@@ -35,8 +35,8 @@ public class PostController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addPost(@RequestBody AddPostRequest post){
-        postService.addPost(post);
+    public PostDto addPost(@RequestBody AddPostRequest post){
+        return postService.addPost(post);
     }
 
     @GetMapping("/get")

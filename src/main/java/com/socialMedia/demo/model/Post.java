@@ -23,6 +23,9 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
+
     private LocalDateTime createdAt;
 
     @ManyToOne

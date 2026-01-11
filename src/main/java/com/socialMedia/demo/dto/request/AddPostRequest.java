@@ -10,4 +10,5 @@ import lombok.Setter;
 public class AddPostRequest {
 
     private String content;
+    private String imageUrl;
 }
