@@ -1,6 +1,7 @@
 package com.socialMedia.demo.controller.api;
 
 import com.socialMedia.demo.dto.PostDto;
+import com.socialMedia.demo.dto.request.AddPostRequest;
 import com.socialMedia.demo.model.Post;
 import com.socialMedia.demo.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PostController {
 
     private final PostService postService;
@@ -33,7 +35,7 @@ public class PostController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addPost(@RequestBody Post post){
+    public void addPost(@RequestBody AddPostRequest post){
         postService.addPost(post);
     }
 

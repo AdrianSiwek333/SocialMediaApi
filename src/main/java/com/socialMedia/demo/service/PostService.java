@@ -1,27 +1,34 @@
 package com.socialMedia.demo.service;
 
 import com.socialMedia.demo.dto.PostDto;
+import com.socialMedia.demo.dto.request.AddPostRequest;
 import com.socialMedia.demo.exception.PostNotFoundException;
 import com.socialMedia.demo.mapper.PostMapper;
 import com.socialMedia.demo.model.Post;
+import com.socialMedia.demo.model.Users;
 import com.socialMedia.demo.repository.PostRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
     private final PostMapper postMapper;
+    private final UsersService usersService;
 
-    public PostService(PostRepository postRepository, PostMapper postMapper) {
-        this.postRepository = postRepository;
-        this.postMapper = postMapper;
-    }
+    public PostDto addPost(AddPostRequest addPostRequest) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersService.findUserEntityByEmail(username);
+        Post post = new Post();
+        post.setAuthor(user);
+        post.setContent(addPostRequest.getContent());
 
-    public PostDto addPost(Post post) {
         postRepository.save(post);
         return postMapper.mapToPostDto(post);
     }

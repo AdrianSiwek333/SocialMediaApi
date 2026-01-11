@@ -13,7 +13,8 @@ public class PostMapper {
         return new PostDto(
                 post.getPostId(),
                 post.getContent(),
-                post.getAuthor().getUsername(),
+                post.getAuthor().getFirstName(),
+                post.getAuthor().getLastName(),
                 post.getCreatedAt()
         );
     }
