@@ -10,24 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "post")
-@SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class Post {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
 
     @Column(nullable = false)
     private String content;
-
-    @OneToMany(mappedBy = "parentPost", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH},
-            fetch = FetchType.LAZY)
-    private List<Comment> childComments = new ArrayList<>();
 
     private LocalDateTime createdAt;
 
@@ -39,20 +33,4 @@ public class Post {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-
-
-    public Post(String content, Users author) {
-        this.content = content;
-        this.author = author;
-    }
-
-    public List<CommentDto> getChildCommentsDto() {
-        List<CommentDto> commentDto = new ArrayList<>();
-        for (Comment comment : childComments) {
-            commentDto.add(new CommentDto(comment.getPostId(), comment.getContent(),
-                    comment.getAuthor().getUsername(), comment.getCreatedAt()));
-        }
-        return commentDto;
-    }
-
 }

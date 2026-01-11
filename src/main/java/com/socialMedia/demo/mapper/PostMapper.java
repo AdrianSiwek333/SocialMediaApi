@@ -41,7 +41,7 @@ public class PostMapper {
                 post.getAuthor().getLastName(),
                 post.getCreatedAt(),
                 interactionRepository.countByPostId(post),
-                commentRepository.countByParentPost(post),
+                commentRepository.countByPost(post),
                 isLiked
         );
     }

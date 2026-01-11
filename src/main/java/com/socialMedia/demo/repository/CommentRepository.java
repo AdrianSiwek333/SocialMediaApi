@@ -11,6 +11,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     void deleteAllByAuthor(Users author);
 
-    Page<Comment> findByParentPost(Post parentPost, Pageable pageable);
-    long countByParentPost(Post parentPost);
+    Page<Comment> findByPostAndParentCommentIsNull(Post post, Pageable pageable);
+    long countByPost(Post parentPost);
+    Page<Comment> findByParentComment(Comment parentComment, Pageable pageable);
 }

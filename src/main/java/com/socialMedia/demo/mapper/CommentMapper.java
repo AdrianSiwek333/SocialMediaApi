@@ -11,10 +11,11 @@ public class CommentMapper {
 
     public CommentDto mapToCommentDto(Comment comment) {
         return new CommentDto(
-                comment.getPostId(),
+                comment.getId(),
                 comment.getContent(),
                 comment.getAuthor().getUsername(),
-                comment.getCreatedAt()
+                comment.getCreatedAt(),
+                comment.getReplies() != null ? comment.getReplies().size() : 0
         );
     }
 

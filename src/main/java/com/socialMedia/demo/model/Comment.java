@@ -1,33 +1,44 @@
 package com.socialMedia.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
+import jakarta.persistence.*;
+import lombok.*;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@SuperBuilder
-public class Comment extends Post {
+@Table(name = "comment")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Comment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String content;
+
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private Users author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Post parentPost;
+    private Comment parentComment;
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+    private List<Comment> replies = new ArrayList<>();
 
-    public Comment() {
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
-
-    public Comment(String content, Post parentPost, Users author) {
-        super(content, author);
-        this.parentPost = parentPost;
-    }
-
-    public Comment(String content, Users author) {
-        super(content, author);
-    }
-
 }
