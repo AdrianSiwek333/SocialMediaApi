@@ -44,5 +44,10 @@ public class PostController {
         return ResponseEntity.ok("Hello from PostController");
     }
 
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<Long> toggleLike(@PathVariable Long postId) {
+        long newLikeCount = postService.toggleLike(postId);
+        return ResponseEntity.ok(newLikeCount);
+    }
 }
 

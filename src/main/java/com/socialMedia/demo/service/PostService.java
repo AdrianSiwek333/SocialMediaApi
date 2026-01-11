@@ -4,8 +4,10 @@ import com.socialMedia.demo.dto.PostDto;
 import com.socialMedia.demo.dto.request.AddPostRequest;
 import com.socialMedia.demo.exception.PostNotFoundException;
 import com.socialMedia.demo.mapper.PostMapper;
+import com.socialMedia.demo.model.Interaction;
 import com.socialMedia.demo.model.Post;
 import com.socialMedia.demo.model.Users;
+import com.socialMedia.demo.repository.InteractionRepository;
 import com.socialMedia.demo.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -13,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -21,6 +24,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final UsersService usersService;
+    private final InteractionRepository interactionRepository;
 
     public PostDto addPost(AddPostRequest addPostRequest) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -54,5 +58,23 @@ public class PostService {
                 .stream()
                 .map(postMapper::mapToPostDto)
                 .toList();
+    }
+
+    public long toggleLike(Long postId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersService.findUserEntityByEmail(email);
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+
+        Optional<Interaction> interaction = interactionRepository.findByPostIdAndUserId(post, user);
+
+        if (interaction.isPresent()) {
+            interactionRepository.delete(interaction.get());
+        } else {
+            interactionRepository.save(new Interaction(post, user));
+        }
+
+        return interactionRepository.countByPostId(post);
     }
 }

@@ -18,4 +18,7 @@ public class PostDto {
     private String firstName;
     private String lastName;
     private LocalDateTime createdAt;
+    private long likesCount;
+    private long commentsCount;
+    private boolean isLikedByCurrentUser;
 }
