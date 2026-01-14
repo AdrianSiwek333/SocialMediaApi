@@ -19,8 +19,15 @@ public class PostController {
 
     public PostController(PostService postService) {
         this.postService = postService;
-
     }
+
+    @GetMapping("/user/{userId}")
+    public List<PostDto> getAllUserPosts(@PathVariable Long userId,
+                                         @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "10") int size){
+        return postService.findAllPostsByUser(userId, page, size);
+    }
+
     @GetMapping("/all")
     public List<PostDto> getAllPosts(@RequestParam(defaultValue = "0") int page,
                                      @RequestParam(defaultValue = "10") int size) {

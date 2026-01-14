@@ -11,6 +11,7 @@ import com.socialMedia.demo.repository.InteractionRepository;
 import com.socialMedia.demo.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +57,8 @@ public class PostService {
     }
 
     public List<PostDto> findAllPosts(int page, int size) {
-        return postRepository.findAll(PageRequest.of(page, size)).getContent()
+        return postRepository.findAll(PageRequest.of(page, size,
+                Sort.by(Sort.Direction.DESC, "createdAt"))).getContent()
                 .stream()
                 .map(postMapper::mapToPostDto)
                 .toList();
@@ -78,5 +80,13 @@ public class PostService {
         }
 
         return interactionRepository.countByPostId(post);
+    }
+
+    public List<PostDto> findAllPostsByUser(Long userId, int page, int size) {
+        Users user = usersService.findUserEntityById(userId);
+        return postMapper.mapToPostDtoList(
+                postRepository.findByAuthor(user, PageRequest.of(
+                        page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
+                ).stream().toList());
     }
 }

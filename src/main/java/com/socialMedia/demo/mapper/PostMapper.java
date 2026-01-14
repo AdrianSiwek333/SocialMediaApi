@@ -38,6 +38,7 @@ public class PostMapper {
                 post.getPostId(),
                 post.getContent(),
                 post.getImageUrl(),
+                post.getAuthor().getId(),
                 post.getAuthor().getFirstName(),
                 post.getAuthor().getLastName(),
                 post.getCreatedAt(),
