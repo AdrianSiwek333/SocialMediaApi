@@ -14,7 +14,11 @@ import java.time.LocalDateTime;
 public class CommentDto {
     private Long id;
     private String content;
-    private String username;
+    private Long userId;
+    private String firstName;
+    private String lastName;
+    private String sex;
+    private String avatarUrl;
     private LocalDateTime createdAt;
     private int replyNumber;
 }

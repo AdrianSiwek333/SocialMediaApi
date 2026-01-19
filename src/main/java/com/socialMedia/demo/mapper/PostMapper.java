@@ -41,6 +41,7 @@ public class PostMapper {
                 post.getAuthor().getId(),
                 post.getAuthor().getFirstName(),
                 post.getAuthor().getLastName(),
+                post.getAuthor().getAvatarUrl(),
                 post.getCreatedAt(),
                 interactionRepository.countByPostId(post),
                 commentRepository.countByPost(post),

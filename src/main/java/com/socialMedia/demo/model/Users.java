@@ -39,6 +39,9 @@ public class Users implements UserDetails {
     @Column
     private String email;
 
+    @Column(columnDefinition = "TEXT")
+    private String avatarUrl;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

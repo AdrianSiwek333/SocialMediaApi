@@ -18,7 +18,11 @@ public class CommentMapper {
         return new CommentDto(
                 comment.getId(),
                 comment.getContent(),
-                comment.getAuthor().getUsername(),
+                comment.getAuthor().getId(),
+                comment.getAuthor().getFirstName(),
+                comment.getAuthor().getLastName(),
+                comment.getAuthor().getSex(),
+                comment.getAuthor().getAvatarUrl(),
                 comment.getCreatedAt(),
                 commentRepository.countByParentComment(comment)
         );

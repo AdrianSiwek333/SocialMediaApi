@@ -19,6 +19,7 @@ public class PostDto {
     private Long userId;
     private String firstName;
     private String lastName;
+    private String avatarUrl;
     private LocalDateTime createdAt;
     private long likesCount;
     private long commentsCount;

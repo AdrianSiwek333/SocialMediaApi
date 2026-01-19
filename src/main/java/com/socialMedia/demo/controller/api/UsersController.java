@@ -86,4 +86,11 @@ public class UsersController {
         usersService.deleteUser(userId);
     }
 
+    @PostMapping("/{userId}/avatar")
+    public void updateAvatar(@PathVariable Long userId, @RequestBody Map<String, String> payload)
+    {
+        String avatarUrl = payload.get("avatarUrl");
+        usersService.updateAvatar(userId, avatarUrl);
+    }
+
 }

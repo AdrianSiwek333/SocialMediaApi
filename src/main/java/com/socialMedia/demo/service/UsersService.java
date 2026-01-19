@@ -86,11 +86,21 @@ public class UsersService {
     }*/
 
     public boolean isAuthenticatedUserOwner(Users user) {
-        String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        return authenticatedUsername != null && authenticatedUsername.equals(user.getUsername());
+        return false;
     }
 
     public String getAuthenticatedUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    public void updateAvatar(Long userId, String avatarUrl){
+        Users user = findUserEntityById(userId);
+        Users user2 = findUserByEmail(getAuthenticatedUsername());
+        if(!user.equals(user2))
+        {
+            throw new UsernameNotFoundException("You are not allowed to this user profile");
+        }
+        user.setAvatarUrl(avatarUrl);
+        usersRepository.save(user);
     }
 }
