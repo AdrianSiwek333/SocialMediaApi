@@ -42,6 +42,9 @@ public class Users implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String avatarUrl;
 
+    @Column(columnDefinition = "TEXT")
+    private String bgUrl;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;

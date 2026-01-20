@@ -103,4 +103,15 @@ public class UsersService {
         user.setAvatarUrl(avatarUrl);
         usersRepository.save(user);
     }
+
+    public void updateBackground(Long userId, String background) {
+        Users user = findUserEntityById(userId);
+        Users user2 = findUserByEmail(getAuthenticatedUsername());
+        if(!user.equals(user2))
+        {
+            throw new UsernameNotFoundException("You are not allowed to this user profile");
+        }
+        user.setBgUrl(background);
+        usersRepository.save(user);
+    }
 }

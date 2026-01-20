@@ -15,4 +15,5 @@ public class UserDto {
     public String sex;
     public String email;
     public String avatarUrl;
+    public String bgUrl;
 }

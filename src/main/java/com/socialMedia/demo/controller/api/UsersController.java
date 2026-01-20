@@ -93,4 +93,11 @@ public class UsersController {
         usersService.updateAvatar(userId, avatarUrl);
     }
 
+    @PostMapping("/{userId}/background")
+    public void updateBackground(@PathVariable Long userId, @RequestBody Map<String, String> payload)
+    {
+        String background = payload.get("bgUrl");
+        usersService.updateBackground(userId, background);
+    }
+
 }
