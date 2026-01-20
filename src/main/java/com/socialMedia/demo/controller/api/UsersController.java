@@ -2,6 +2,7 @@ package com.socialMedia.demo.controller.api;
 
 import com.socialMedia.demo.dto.ChangePasswordDto;
 import com.socialMedia.demo.dto.UserDto;
+import com.socialMedia.demo.dto.request.UserUpdateRequest;
 import com.socialMedia.demo.mapper.UserMapper;
 import com.socialMedia.demo.model.Users;
 import com.socialMedia.demo.service.UsersService;
@@ -98,6 +99,14 @@ public class UsersController {
     {
         String background = payload.get("bgUrl");
         usersService.updateBackground(userId, background);
+    }
+
+    @PutMapping("/{userId}")
+    public void updateUser(
+            @PathVariable Long userId,
+            @RequestBody UserUpdateRequest userData) {
+
+        usersService.updateUser(userId, userData);
     }
 
 }
