@@ -12,6 +12,7 @@ import com.socialMedia.demo.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -88,5 +89,28 @@ public class PostService {
                 postRepository.findByAuthor(user, PageRequest.of(
                         page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
                 ).stream().toList());
+    }
+
+    public void deletePost(Long postId) {
+        Post post = postRepository.findById(postId).
+                orElseThrow(()-> new PostNotFoundException("Post not found"));
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = usersService.findUserEntityByEmail(email);
+
+        if(user.getId().equals(post.getAuthor().getId()))
+        {
+//            interactionRepository.deleteAllByPostId(post);
+            List<Interaction> interactions = interactionRepository.findAllByPostId(post);
+            for (Interaction interaction: interactions)
+            {
+                interactionRepository.delete(interaction);
+            }
+            postRepository.deleteById(postId);
+        }
+        else
+        {
+            throw new AuthorizationDeniedException("You are not owner of this post");
+        }
     }
 }

@@ -56,5 +56,11 @@ public class PostController {
         long newLikeCount = postService.toggleLike(postId);
         return ResponseEntity.ok(newLikeCount);
     }
+
+    @DeleteMapping("/{postId}")
+    public void deletePost(@PathVariable Long postId)
+    {
+        postService.deletePost(postId);
+    }
 }
 
